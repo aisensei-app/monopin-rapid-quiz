@@ -9,7 +9,8 @@
 
   function top() {
     clearInterval(timer);
-    root.innerHTML = `<section class="card top-card"><div class="pin-mark"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><p class="eyebrow">3 SECONDS × 10 QUESTIONS</p><h1>瞬発力で、<br>答えにピンしよう。</h1><p class="lead">知ってる問題も、知らない問題も。<br>3秒で、何点取れる？</p><button class="primary" id="start">スタート！</button><p class="rule">全10問　・　1問3秒　・　1点</p></section>`;
+    window.scrollTo(0, 0);
+    root.innerHTML =`<section class="card top-card"><div class="pin-mark"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><p class="eyebrow">3 SECONDS × 10 QUESTIONS</p><h1>瞬発力で、<br>答えにピンしよう。</h1><p class="lead">知ってる問題も、知らない問題も。<br>3秒で、何点取れる？</p><button class="primary" id="start">スタート！</button><p class="rule">全10問　・　1問3秒　・　1点</p></section>`;
     $('#start').onclick = countdown;
   }
   function countdown() {
