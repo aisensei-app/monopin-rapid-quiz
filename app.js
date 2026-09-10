@@ -7,11 +7,19 @@
   let index = 0;
   let timer;
 
+  // 計測がブロックされている環境でも、クイズ自体は問題なく動作します。
+  function track(eventName, parameters = {}) {
+    if (typeof window.gtag === 'function') window.gtag('event', eventName, parameters);
+  }
+
   function top() {
     clearInterval(timer);
     window.scrollTo(0, 0);
     root.innerHTML =`<section class="card top-card"><div class="pin-mark"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div><p class="eyebrow">3 SECONDS × 10 QUESTIONS</p><h1>瞬発力で、<br>答えにピンしよう。</h1><p class="lead">知ってる問題も、知らない問題も。<br>3秒で、何点取れる？</p><button class="primary" id="start">スタート！</button><p class="rule">全10問　・　1問3秒　・　1点</p></section>`;
-    $('#start').onclick = countdown;
+    $('#start').onclick = () => {
+      track('quiz_start', { question_count: 10 });
+      countdown();
+    };
   }
   function countdown() {
     let n = 3;
@@ -48,7 +56,18 @@
       if (!remain) { clearInterval(timer); next(); }
     }, 35);
   }
-  function next() { index++; if(index === 10) results(); else { root.classList.add('slide-out'); setTimeout(()=>{ root.classList.remove('slide-out'); showQuestion(); }, 240); } }
+  function next() {
+    const q = game[index];
+    const answer = answers[index];
+    track('quiz_answer', {
+      question_number: index + 1,
+      question_category: q.c,
+      answered: answer !== null,
+      correct: answer === q.x
+    });
+    index++;
+    if(index === 10) results(); else { root.classList.add('slide-out'); setTimeout(()=>{ root.classList.remove('slide-out'); showQuestion(); }, 240); }
+  }
   function messageFor(score) {
     if (score === 10) return { heading: 'Perfect!', lead: '10問すべて、きれいにピンした！' };
     if (score >= 8) return { heading: 'ナイス！', lead: 'この調子で次も頑張ろう。' };
@@ -80,6 +99,7 @@
     const score = game.reduce((n,q,i)=>n + (answers[i]===q.x),0);
     const perfect = score === 10;
     const msg = messageFor(score);
+    track('quiz_complete', { score, question_count: 10, perfect });
     root.innerHTML = `<section class="card result-card"><p class="eyebrow">RESULT</p><h1>${msg.heading}</h1><div class="score"><strong>${score}</strong><span>/ 10</span></div><p class="lead">${msg.lead}</p><div class="answers"><h3>答え合わせ</h3>${game.map((q,i)=>`<article><b class="${answers[i]===q.x?'ok':'no'}">${answers[i]===q.x?'○':'×'}</b><div><p>${q.q}</p><small>正解：<strong>${q.x}</strong></small></div></article>`).join('')}</div><button class="secondary" id="home">TOPに戻る</button></section>`;
     $('#home').onclick = top;
     if (perfect) launchConfetti();
